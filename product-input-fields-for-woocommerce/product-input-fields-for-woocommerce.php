@@ -3,7 +3,7 @@
  * Plugin Name: Product Input Fields for WooCommerce
  * Plugin URI: https://www.tychesoftwares.com/store/premium-plugins/product-input-fields-for-woocommerce/
  * Description: Add custom product input fields to your WooCommerce products. Let customers personalize/customize products effortlessly. Elevate your store experience!
- * Version: 1.9.0
+ * Version: 1.10.0
  * Author: Tyche Softwares
  * Author URI: https://www.tychesoftwares.com/
  * Text Domain: product-input-fields-for-woocommerce
@@ -11,8 +11,8 @@
  * Copyright: © 2021 Tyche Softwares
  * Requires PHP: 7.4
  * WC requires at least: 5.0.0
- * WC tested up to: 9.3.3
- * Tested up to: 6.6.2
+ * WC tested up to: 9.4.2
+ * Tested up to: 6.7.1
  * Requires Plugins: woocommerce
  * License: GNU General Public License v3.0
  * License URI: http://www.gnu.org/licenses/gpl-3.0.html
@@ -39,7 +39,7 @@ if (
 
 // Constants.
 if ( ! defined( 'ALG_WC_PIF_VERSION' ) ) {
-	define( 'ALG_WC_PIF_VERSION', '1.9.0' );
+	define( 'ALG_WC_PIF_VERSION', '1.10.0' );
 }
 if ( ! defined( 'ALG_WC_PIF_ID' ) ) {
 	define( 'ALG_WC_PIF_ID', 'alg_wc_pif' );
@@ -84,7 +84,7 @@ if ( ! class_exists( 'Alg_WC_PIF' ) ) :
 		 * @var string Version.
 		 * @access public
 		 */
-		public static $version = '1.9.0';
+		public static $version = '1.10.0';
 
 		/**
 		 * Define an instance for the class.
@@ -124,7 +124,7 @@ if ( ! class_exists( 'Alg_WC_PIF' ) ) :
 			register_deactivation_hook( __FILE__, array( &$this, 'pif_deactivate' ) );
 
 			// Set up localisation.
-			load_plugin_textdomain( 'product-input-fields-for-woocommerce', false, dirname( plugin_basename( __FILE__ ) ) . '/langs/' );
+			add_action( 'init', array( $this, 'pif_load_text_domain' ) );
 
 			// Include required files.
 			$this->includes();
@@ -135,6 +135,13 @@ if ( ! class_exists( 'Alg_WC_PIF' ) ) :
 				add_filter( 'woocommerce_get_settings_pages', array( $this, 'add_woocommerce_settings_tab' ) );
 				add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), array( $this, 'action_links' ) );
 			}
+		}
+
+		/**
+		 * Added plugin text domain.
+		 */
+		public function pif_load_text_domain() {
+			load_plugin_textdomain( 'product-input-fields-for-woocommerce', false, dirname( plugin_basename( __FILE__ ) ) . '/langs/' );
 		}
 
 		/**
