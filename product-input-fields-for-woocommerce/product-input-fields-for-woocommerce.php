@@ -3,7 +3,7 @@
  * Plugin Name: Product Input Fields for WooCommerce
  * Plugin URI: https://www.tychesoftwares.com/store/premium-plugins/product-input-fields-for-woocommerce/
  * Description: Add custom product input fields to your WooCommerce products. Let customers personalize/customize products effortlessly. Elevate your store experience!
- * Version: 1.10.0
+ * Version: 1.11.0
  * Author: Tyche Softwares
  * Author URI: https://www.tychesoftwares.com/
  * Text Domain: product-input-fields-for-woocommerce
@@ -11,7 +11,7 @@
  * Copyright: © 2021 Tyche Softwares
  * Requires PHP: 7.4
  * WC requires at least: 5.0.0
- * WC tested up to: 9.4.2
+ * WC tested up to: 9.5.2
  * Tested up to: 6.7.1
  * Requires Plugins: woocommerce
  * License: GNU General Public License v3.0
@@ -31,7 +31,7 @@ require_once 'vendor/autoload.php';
 /** Check if WooCommerce is active */
 $plugin_name = 'woocommerce/woocommerce.php';
 if (
-	! in_array( $plugin_name, apply_filters( 'active_plugins', get_option( 'active_plugins', array() ) ) ) &&
+	! in_array( $plugin_name, apply_filters( 'active_plugins', get_option( 'active_plugins', array() ) ) ) && // phpcs:ignore
 	! ( is_multisite() && array_key_exists( $plugin_name, get_site_option( 'active_sitewide_plugins', array() ) ) )
 ) {
 	return;
@@ -39,7 +39,7 @@ if (
 
 // Constants.
 if ( ! defined( 'ALG_WC_PIF_VERSION' ) ) {
-	define( 'ALG_WC_PIF_VERSION', '1.10.0' );
+	define( 'ALG_WC_PIF_VERSION', '1.11.0' );
 }
 if ( ! defined( 'ALG_WC_PIF_ID' ) ) {
 	define( 'ALG_WC_PIF_ID', 'alg_wc_pif' );
@@ -54,7 +54,7 @@ if ( ! function_exists( 'get_wc_pif_option' ) ) {
 	 * @version 1.0.0
 	 * @since   1.0.0
 	 */
-	function get_wc_pif_option( $option, $default = false ) {
+	function get_wc_pif_option( $option, $default = false ) { // phpcs:ignore
 		return get_option( ALG_WC_PIF_ID . '_' . $option, $default );
 	}
 }
@@ -68,7 +68,7 @@ if ( ! class_exists( 'Alg_WC_PIF' ) ) :
 	 * @version 1.2.1
 	 * @since   1.0.0
 	 */
-	final class Alg_WC_PIF {
+	final class Alg_WC_PIF { // phpcs:ignore
 
 		/**
 		 * Setting
@@ -84,7 +84,7 @@ if ( ! class_exists( 'Alg_WC_PIF' ) ) :
 		 * @var string Version.
 		 * @access public
 		 */
-		public static $version = '1.10.0';
+		public static $version = '1.11.0';
 
 		/**
 		 * Define an instance for the class.
