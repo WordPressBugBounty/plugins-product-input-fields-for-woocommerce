@@ -1,4 +1,22 @@
 *** Product Input Fields for WooCommerce ***
+
+2026-06-16 - version 2.0.0
+* New - React-based admin interface for Settings, Prefix/Suffix rules, and FAQs pages.
+* Dev - Introduced a REST API layer (pif/v1) for all admin data operations, with per-endpoint capability checks.
+* Dev - Plugin settings migrated from individual `alg_wc_pif_*` options to consolidated `pif_general_settings` and `pif_field_settings` options.
+* Dev - Removed dead WooCommerce < 3.0 functions.
+* Tweak - Updated for compatibility with WordPress 7.0.
+* Tweak - Updated for compatibility with WooCommerce 10.8.1.
+
+2026-06-02 - version 1.15.0
+* Fix - Product Input Field data is now carried forward when Stripe Express Checkout is used directly from the product page.
+* Fix - PHP 8.2+ deprecation warning caused by dynamic property creation in Alg_WC_Settings_PIF.
+
+2026-01-06 - version 1.14.0
+* Fix - On the product page, if a date was selected twice using the week picker input and the product was added to the cart, the end week date appeared repeatedly in the cart input field.
+* Tweak - Updated for compatibility with WordPress 6.9.
+* Tweak - Updated for compatibility with WooCommerce 10.4.3.
+
 2025-07-01 - version 1.13.0
 * Fix - Uncaught fatal error when an order is marked "On Hold" from the admin panel.
 * Fix - Files uploaded by guest users via file-type input fields were not downloadable from the Edit Order page.
