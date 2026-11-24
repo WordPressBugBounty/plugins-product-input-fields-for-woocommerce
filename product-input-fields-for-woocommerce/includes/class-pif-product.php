@@ -166,7 +166,7 @@ class PIF_Product {
 		}
 		$price_html = '';
 		$min_html   = '';
-		$omin       = 0;		
+		$omin       = 0;
 		if ( $product->get_type() === 'variable' ) {
 			$price_html = "<span class='original-price' style='display:none'></span>";
 			$args       = array(
@@ -202,19 +202,12 @@ class PIF_Product {
 
 			$price_html = '<span class="original-price" style="display:none">' . $price . '</span>';
 		}
-		$frontend_html = self::check_field_exists();
 
-		if ( $frontend_html ) {
-			$html  = wp_kses_post( pif_get_option( 'frontend_before', '<table id="alg-product-input-fields-table" class="alg-product-input-fields-table">' ) );
-			$html .= '<span class="currency-pos" style="display:none">' . get_option( 'woocommerce_currency_pos' ) . '</span>';
-			$html .= $price_html . $min_html;
-			echo $html; //phpcs:ignore
-		} else {
-			$html  = '<table id="alg-product-input-fields-table" class="alg-product-input-fields-table">';
-			$html .= '<span class="currency-pos" style="display:none">' . get_option( 'woocommerce_currency_pos' ) . '</span>';
-			$html .= $price_html . $min_html;
-			echo $html; //phpcs:ignore
-		}
+		// Always use the wrapper from settings (falls back to the default table), so opening and closing tags always match.
+		$html  = wp_kses_post( pif_get_option( 'frontend_before', '<table id="alg-product-input-fields-table" class="alg-product-input-fields-table">' ) );
+		$html .= '<span class="currency-pos" style="display:none">' . get_option( 'woocommerce_currency_pos' ) . '</span>';
+		$html .= $price_html . $min_html;
+		echo $html; //phpcs:ignore
 	}
 
 	/**
@@ -224,12 +217,7 @@ class PIF_Product {
 	 * @since   1.0.0
 	 */
 	public static function add_after_product_input_fields_to_frontend() {
-		$frontend_html = true;
-		if ( $frontend_html ) {
-			echo wp_kses_post( pif_get_option( 'frontend_after', '</table>' ) );
-		} else {
-			echo ( '</table>' );
-		}
+		echo wp_kses_post( pif_get_option( 'frontend_after', '</table>' ) );
 	}
 
 	/**
@@ -285,6 +273,16 @@ class PIF_Product {
 		echo $html; //phpcs:ignore
 	}
 
+	/**
+	 * Check if option is enabled.
+	 *
+	 * @param mixed $value Option value.
+	 * @return bool
+	 */
+	private static function is_option_enabled( $value ) {
+		return in_array( $value, array( true, 'yes', 1, '1' ), true );
+	}
+
 	public static function get_field_html( $fields, $scope, $product_id ) {
 		$html = '';
 		$price_symbol   = get_woocommerce_currency_symbol();
@@ -333,7 +331,7 @@ class PIF_Product {
 				// Field name and value.
 				$field_name    = ALG_WC_PIF_ID . '_' . $scope . '_' . $field_id;
 				$field_min_qty = ( isset( $product_input_field['field_min_qty'] ) && '' !== $product_input_field['field_min_qty'] ? $product_input_field['field_min_qty'] : 1 );
-				$_value        = ( 'yes' === pif_get_option( 'frontend_refill', 'yes' ) && isset( $_POST[ $field_name ] ) ) ? sanitize_text_field( wp_unslash( $_POST[ $field_name ] ) ) : $product_input_field['default_value']; // phpcs:ignore
+				$_value        = ( self::is_option_enabled( pif_get_option( 'frontend_refill', 'yes' ) ) && isset( $_POST[ $field_name ] ) ) ? sanitize_text_field( wp_unslash( $_POST[ $field_name ] ) ) : $product_input_field['default_value']; // phpcs:ignore
 				$_value        = stripslashes_deep( $_value );
 				$_value        = esc_attr( $_value );
 				if ( isset( $product_input_field['type'] ) && 'textarea' === $product_input_field['type'] ) {
@@ -512,8 +510,7 @@ class PIF_Product {
 						$input_value           = is_array( $_value ) ? implode( ', ', $_value ) : $_value;
 
 						$condition   = ( 'number' === $product_input_field['type'] || 'range' === $product_input_field['type'] ) ? $required_price_range_condition : $required_price_character_condition;
-						$datasets    = $_value;
-						$field_html  = '<input ' . $datasets . $form_cart . $min . $max . $step . $maxlength . $pattern . $class . $style . ' value="' . $input_value . '" type="' . $product_input_field['type'] . '" name="' . $field_name . '" data-min_qty="' . $field_min_qty . '" id="' . $field_name . '" placeholder="' . $product_input_field['placeholder'] . '"' . $custom_attributes . $required . '>';
+						$field_html  = '<input' . $form_cart . $min . $max . $step . $maxlength . $pattern . $class . $style . ' value="' . $input_value . '" type="' . $product_input_field['type'] . '" name="' . $field_name . '" data-min_qty="' . $field_min_qty . '" id="' . $field_name . '" placeholder="' . $product_input_field['placeholder'] . '"' . $custom_attributes . $required . '>';
 						break;
 				}
 

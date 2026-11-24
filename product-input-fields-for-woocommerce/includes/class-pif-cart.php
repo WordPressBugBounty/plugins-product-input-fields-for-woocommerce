@@ -80,13 +80,14 @@ class PIF_Cart {
 
 			// Validate required fields only if the field is visible.
 			if ( $required ) {
-				$is_empty = false;
-				$field_value = null;
+				$is_empty    = false;
+				$field_value = '';
 				if ( 'file' === $product_input_field['type'] ) {
 					$field_value = ( isset( $_FILES[ $field_name ]['name'] ) ) ? $_FILES[ $field_name ]['name'] : ''; //phpcs:ignore
 					if ( '' === $field_value && $is_express && $session_data ) {
 						$field_value = $session_data['files'][ $field_name ] ?? '';
 					}
+					$is_empty = ( '' === $field_value );
 				} else {
 					if ( isset( $_POST[ $field_name ] ) ) { // phpcs:ignore
 						$field_value = sanitize_text_field( wp_unslash( $_POST[ $field_name ] ) ); // phpcs:ignore
@@ -328,21 +329,24 @@ class PIF_Cart {
 		$values  = is_array( $value ) && isset( $value['name'] ) ? $value['name'] : $value;
 		$show_thumbnail = isset( $product_input_field['file_show_thumbnail'] ) && ( true === $product_input_field['file_show_thumbnail'] || 'yes' === $product_input_field['file_show_thumbnail'] ) ? true : false;
 
-		if ( ! empty( $value ) && $show_thumbnail ) {
-			$file_type = $value['type'] ?? '';
+		if ( ! empty( $value ) && $show_thumbnail && isset( $value['_tmp_name'] ) && ! empty( $value['_tmp_name'] ) && file_exists( $value['_tmp_name'] ) ) {
+			// Verify real file type from content (not client Content-Type), and never trust client-supplied filename.
+			$safe_extension = PIF_Order::get_safe_extension_from_content( $value['_tmp_name'] );
 
-			if ( in_array( $file_type, array( 'image/jpeg', 'image/jpg', 'image/png' ), true ) && isset( $value['_tmp_name'] ) ) {
+			if ( in_array( $safe_extension, array( 'jpg', 'png' ), true ) ) {
 				$upload_dir = wp_upload_dir()['basedir'] . '/pif_temp';
 				if ( ! file_exists( $upload_dir ) ) {
 					mkdir( $upload_dir, 0755, true ); //phpcs:ignore
 				}
-				$upload_dir_and_name = $upload_dir . '/' . $value['name'];
-				if ( isset( $value['_tmp_name'] ) && ! empty( $value['_tmp_name'] ) && file_exists( $value['_tmp_name'] ) ) {
-					$file_data = file_get_contents( $value['_tmp_name'] ); // Read the temporary file.
-					file_put_contents( $upload_dir_and_name, $file_data ); // Save to the new location.
-				}
+				PIF_Order::maybe_protect_uploads_dir( $upload_dir );
 
-				$img_url = home_url() . '/wp-content/uploads/pif_temp/' . $value['name'];
+				$safe_name           = wp_generate_password( 20, false, false ) . '.' . $safe_extension;
+				$upload_dir_and_name = $upload_dir . '/' . $safe_name;
+
+				$file_data = file_get_contents( $value['_tmp_name'] ); // Read the temporary file.
+				file_put_contents( $upload_dir_and_name, $file_data ); // Save to the new location.
+
+				$img_url = home_url() . '/wp-content/uploads/pif_temp/' . $safe_name;
 			}
 		}
 

@@ -22,8 +22,7 @@ class PIF_Order {
 	 * @param mixed $values Values.
 	 */
 	public static function save_values_in_item( $item, $cart_item_key, $values ) {
-		$pif_values         = ALG_WC_PIF_ID . '_values';
-		$item['pif_values'] = $values;
+		$item->add_meta_data( '_' . ALG_WC_PIF_ID . '_values', $values, true );
 	}
 
 	/**
@@ -35,8 +34,8 @@ class PIF_Order {
 	 * @param object $item Order Item object.
 	 */
 	public static function add_product_input_fields_to_order_item_meta( $item_id, $item ) {
-		$scopes  = array( 'global', 'local' );
-		$values  = $item->get_meta( 'pif_values' );
+		$scopes = array( 'global', 'local' );
+		$values = $item->get_meta( '_' . ALG_WC_PIF_ID . '_values' );
 
 		foreach ( $scopes as $scope ) {
 			$_product_input_fields = array();
@@ -80,7 +79,7 @@ class PIF_Order {
 	 * @param string $tmp_path Path to the temporary file on disk.
 	 * @return string|false Safe extension, or false if not allowed.
 	 */
-	private static function get_safe_extension_from_content( $tmp_path ) {
+	public static function get_safe_extension_from_content( $tmp_path ) {
 		$real_mime = '';
 		if ( function_exists( 'finfo_open' ) ) {
 			$finfo = finfo_open( FILEINFO_MIME_TYPE );
@@ -116,7 +115,7 @@ class PIF_Order {
 	 *
 	 * @param string $upload_dir Absolute path to the upload directory.
 	 */
-	private static function maybe_protect_uploads_dir( $upload_dir ) {
+	public static function maybe_protect_uploads_dir( $upload_dir ) {
 		if ( ! file_exists( $upload_dir ) ) {
 			mkdir( $upload_dir, 0755, true ); //phpcs:ignore
 		}
